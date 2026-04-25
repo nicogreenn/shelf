@@ -3,10 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from '@/lib/supabase'
 
 const T = {
-  bg: "#f7f4ef", card: "#ffffff", card2: "#f0ede8", border: "#e0dbd2",
-  navBg: "#ffffff", primary: "#2d6a4f", accent: "#52b788", warn: "#e07a3a",
-  red: "#d62828", green: "#2d6a4f", text: "#1a1a1a", muted: "#7a7570", dim: "#b5b0aa",
-  gradA: "#2d6a4f", gradB: "#52b788",
+  bg: "#f9f6ef", card: "#ffffff", card2: "#f2ede0", border: "#e0d8c4",
+  navBg: "#ffffff", primary: "#2d6a2d", accent: "#f5a623", warn: "#e07a3a",
+  red: "#d62828", green: "#2d6a2d", text: "#1a1a0a", muted: "#7a7560", dim: "#b5b090",
+  gradA: "#2d6a2d", gradB: "#f5a623",
 };
 
 const CATEGORIES = [
