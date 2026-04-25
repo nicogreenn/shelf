@@ -552,10 +552,6 @@ export default function ShelfApp({ user, onSignOut }) {
         setLoading(false);
       }).catch(() => setLoading(false));
   }, [user]);
-        }
-        setLoading(false);
-      }).catch(() => setLoading(false));
-  }, [user]);
 
   const stateRef = useRef({});
   stateRef.current = { stock, thresholds, targets, countOrder, unitTypes };
