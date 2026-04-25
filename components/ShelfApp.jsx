@@ -507,7 +507,7 @@ export default function ShelfApp({ user, onSignOut }) {
   }
 
   return (
-    <div style={{ background: T.bg, minHeight: "100vh", maxWidth: 480, margin: "0 auto", fontFamily: "'DM Sans',sans-serif", color: T.text }}>
+    <div style={{ background: T.bg, minHeight: "100vh", maxWidth: 480, margin: "0 auto", fontFamily: "'DM Sans',sans-serif", color: T.text, position: "relative" }}>
       <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
       <style>{`*{box-sizing:border-box}input[type=number]::-webkit-inner-spin-button{opacity:1}input::placeholder{color:#b5b0aa}::-webkit-scrollbar{width:0}button{outline:none;font-family:'DM Sans',sans-serif}`}</style>
 
