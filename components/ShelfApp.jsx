@@ -163,12 +163,10 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
   const [started, setStarted] = useState(false);
   const [idx, setIdx] = useState(0);
   const [draft, setDraft] = useState("");
-  const inputRef = useRef(null);
   const orderedItems = countOrder.length > 0 ? countOrder.map(id => ALL_ITEMS.find(i => i.id === id)).filter(Boolean) : ALL_ITEMS;
   const total = orderedItems.length;
   const pct = total > 0 ? Math.round((idx / total) * 100) : 0;
   const current = orderedItems[idx];
-  useEffect(() => { if (started && inputRef.current) inputRef.current.focus(); }, [idx, started]);
 
   const next = () => {
     const n = parseInt(draft);
@@ -209,43 +207,73 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
   }
 
   const target = targets[current.id] ?? 0;
+
+  const numpadPress = (key) => {
+    if (key === "⌫") { setDraft(d => d.length > 1 ? d.slice(0, -1) : ""); }
+    else if (key === "C") { setDraft(""); }
+    else { setDraft(d => d === "" ? key : d + key); }
+  };
+
+  const numpadKeys = ["1","2","3","4","5","6","7","8","9","C","0","⌫"];
+
   return (
-    <div style={{ paddingBottom: 90, minHeight: "100vh", background: T.bg }}>
-      <div style={{ position: "fixed", top: 50, left: 0, right: 0, maxWidth: 480, margin: "0 auto", zIndex: 98, background: T.card, borderBottom: `1px solid ${T.border}`, padding: "12px 16px" }}>
+    <div style={{ height: "100vh", background: "#2d6a2d", display: "flex", flexDirection: "column", paddingTop: 50 }}>
+      {/* Progress bar */}
+      <div style={{ background: "#1e4d1e", padding: "10px 16px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-          <span style={{ fontSize: 12, color: T.muted, fontFamily: "'DM Sans',sans-serif" }}>{idx + 1} of {total}</span>
-          <span style={{ fontSize: 12, color: T.primary, fontFamily: "'DM Sans',sans-serif", fontWeight: 700 }}>{pct}% done</span>
+          <span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "'DM Sans',sans-serif" }}>{idx + 1} of {total}</span>
+          <span style={{ fontSize: 12, color: "#f5a623", fontFamily: "'DM Sans',sans-serif", fontWeight: 700 }}>{pct}% done</span>
         </div>
-        <div style={{ height: 6, borderRadius: 3, background: T.card2, overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${pct}%`, background: T.primary, borderRadius: 3, transition: "width .3s" }} />
+        <div style={{ height: 5, borderRadius: 3, background: "rgba(255,255,255,0.2)", overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${pct}%`, background: "#f5a623", borderRadius: 3, transition: "width .3s" }} />
         </div>
       </div>
-      <div style={{ padding: "130px 20px 20px" }}>
-        <div style={{ background: T.card, borderRadius: 24, padding: 28, border: `1px solid ${T.border}`, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
-            <span style={{ fontSize: 20 }}>{current.catIcon}</span>
-            <span style={{ fontSize: 12, color: T.muted, fontFamily: "'DM Sans',sans-serif", textTransform: "uppercase", letterSpacing: 1 }}>{current.catLabel}</span>
+
+      {/* Item info */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "20px 24px 12px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+          <span style={{ fontSize: 18 }}>{current.catIcon}</span>
+          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontFamily: "'DM Sans',sans-serif", textTransform: "uppercase", letterSpacing: 1 }}>{current.catLabel}</span>
+        </div>
+        <div style={{ fontSize: 34, fontFamily: "'Lora',serif", fontWeight: 700, color: "#ffffff", marginBottom: 10 }}>{current.name}</div>
+        <div style={{ display: "flex", gap: 10 }}>
+          {target > 0 && <div style={{ background: "rgba(245,166,35,0.2)", border: "1px solid rgba(245,166,35,0.4)", borderRadius: 10, padding: "5px 12px" }}><span style={{ fontSize: 12, color: "#f5a623", fontFamily: "'DM Sans',sans-serif", fontWeight: 600 }}>target: {target}</span></div>}
+          <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: 10, padding: "5px 12px" }}><span style={{ fontSize: 12, color: "rgba(255,255,255,0.7)", fontFamily: "'DM Sans',sans-serif" }}>last: {stock[current.id] !== undefined ? stock[current.id] : "—"}</span></div>
+        </div>
+      </div>
+
+      {/* Display */}
+      <div style={{ padding: "0 20px 12px", textAlign: "center" }}>
+        <div style={{ background: "rgba(0,0,0,0.2)", borderRadius: 16, padding: "14px 20px", border: "2px solid rgba(245,166,35,0.5)" }}>
+          <div style={{ fontSize: 56, fontWeight: 700, color: draft ? "#f5a623" : "rgba(255,255,255,0.3)", fontFamily: "'DM Sans',sans-serif", lineHeight: 1, minHeight: 60 }}>
+            {draft || "0"}
           </div>
-          <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: T.text, marginBottom: 8 }}>{current.name}</div>
-          <div style={{ display: "flex", gap: 12, marginBottom: 28 }}>
-            {target > 0 && <div style={{ background: `${T.primary}12`, borderRadius: 10, padding: "6px 12px" }}><span style={{ fontSize: 12, color: T.primary, fontFamily: "'DM Sans',sans-serif", fontWeight: 600 }}>target: {target}</span></div>}
-            <div style={{ background: T.card2, borderRadius: 10, padding: "6px 12px" }}><span style={{ fontSize: 12, color: T.muted, fontFamily: "'DM Sans',sans-serif" }}>last: {stock[current.id] !== undefined ? stock[current.id] : "—"}</span></div>
-          </div>
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ fontSize: 12, color: T.muted, fontFamily: "'DM Sans',sans-serif", marginBottom: 8, textTransform: "uppercase", letterSpacing: 1 }}>How many do you have?</div>
-            <input ref={inputRef} value={draft} onChange={e => setDraft(e.target.value)} onKeyDown={e => { if (e.key === "Enter") next(); }}
-              type="number" min="0" placeholder="0"
-              style={{ width: "100%", boxSizing: "border-box", background: T.card2, border: `2px solid ${T.primary}`, borderRadius: 16, color: T.text, fontFamily: "'DM Sans',sans-serif", fontSize: 42, fontWeight: 700, padding: "16px 20px", textAlign: "center", outline: "none" }} />
-          </div>
-          <button onClick={next} style={{ width: "100%", background: T.primary, border: "none", borderRadius: 14, color: "#fff", fontFamily: "'DM Sans',sans-serif", fontSize: 18, fontWeight: 700, padding: "16px", cursor: "pointer", marginBottom: 10 }}>
-            {idx === total - 1 ? "Finish Count ✓" : "Next →"}
+        </div>
+      </div>
+
+      {/* Numpad */}
+      <div style={{ background: "#f5a623", padding: "12px 16px 16px", borderRadius: "20px 20px 0 0" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 10 }}>
+          {numpadKeys.map(key => (
+            <button key={key} onClick={() => numpadPress(key)}
+              style={{ background: key === "C" ? "rgba(0,0,0,0.15)" : key === "⌫" ? "rgba(0,0,0,0.15)" : "#ffffff", border: "none", borderRadius: 14, color: key === "C" ? "#fff" : key === "⌫" ? "#fff" : "#1a1a0a", fontFamily: "'DM Sans',sans-serif", fontSize: key === "⌫" ? 22 : 24, fontWeight: 700, padding: "18px 0", cursor: "pointer", boxShadow: "0 2px 6px rgba(0,0,0,0.1)" }}>
+              {key}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          <button onClick={skip}
+            style={{ flex: 1, background: "rgba(0,0,0,0.15)", border: "none", borderRadius: 14, color: "#fff", fontFamily: "'DM Sans',sans-serif", fontSize: 15, fontWeight: 600, padding: "14px 0", cursor: "pointer" }}>
+            Skip
           </button>
-          <button onClick={skip} style={{ width: "100%", background: "none", border: `1px solid ${T.border}`, borderRadius: 14, color: T.muted, fontFamily: "'DM Sans',sans-serif", fontSize: 15, padding: "12px", cursor: "pointer" }}>Skip</button>
+          <button onClick={next}
+            style={{ flex: 2, background: "#2d6a2d", border: "none", borderRadius: 14, color: "#ffffff", fontFamily: "'DM Sans',sans-serif", fontSize: 17, fontWeight: 700, padding: "14px 0", cursor: "pointer", boxShadow: "0 2px 10px rgba(0,0,0,0.2)" }}>
+            {idx === total - 1 ? "Finish ✓" : "Next →"}
+          </button>
         </div>
         {idx < total - 1 && (
-          <div style={{ marginTop: 16, padding: "12px 16px", background: T.card, borderRadius: 14, border: `1px solid ${T.border}` }}>
-            <div style={{ fontSize: 11, color: T.dim, fontFamily: "'DM Sans',sans-serif", marginBottom: 4 }}>NEXT UP</div>
-            <div style={{ fontSize: 14, color: T.muted, fontFamily: "'DM Sans',sans-serif" }}>{orderedItems[idx + 1]?.name}</div>
+          <div style={{ marginTop: 10, textAlign: "center" }}>
+            <span style={{ fontSize: 12, color: "rgba(0,0,0,0.4)", fontFamily: "'DM Sans',sans-serif" }}>Next up: {orderedItems[idx + 1]?.name}</span>
           </div>
         )}
       </div>
