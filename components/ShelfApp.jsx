@@ -49,14 +49,14 @@ function BottomNav({ tab, setTab }) {
     { id: "settings", label: "Setup",  icon: "⚙️" },
   ];
   return (
-    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, maxWidth: 480, margin: "0 auto", background: T.navBg, borderTop: `1px solid ${T.border}`, display: "flex", zIndex: 100, boxShadow: "0 -2px 12px rgba(0,0,0,0.06)" }}>
+    <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, maxWidth: 480, margin: "0 auto", background: "#2d6a2d", borderTop: `1px solid #1e4d1e`, display: "flex", zIndex: 100, boxShadow: "0 -2px 12px rgba(45,106,45,0.3)" }}>
       {tabs.map(t => {
         const active = tab === t.id;
         return (
           <button key={t.id} onClick={() => setTab(t.id)} style={{ flex: 1, background: "none", border: "none", padding: "10px 2px 13px", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, position: "relative" }}>
-            {active && <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 3, background: T.primary, borderRadius: "0 0 6px 6px" }} />}
+            {active && <div style={{ position: "absolute", top: 0, left: "20%", right: "20%", height: 3, background: "#f5a623", borderRadius: "0 0 6px 6px" }} />}
             <span style={{ fontSize: 18 }}>{t.icon}</span>
-            <span style={{ fontSize: 9, letterSpacing: 0.5, color: active ? T.primary : T.muted, fontFamily: "'DM Sans',sans-serif", textTransform: "uppercase", fontWeight: active ? 700 : 400 }}>{t.label}</span>
+            <span style={{ fontSize: 9, letterSpacing: 0.5, color: active ? "#f5a623" : "rgba(255,255,255,0.6)", fontFamily: "'DM Sans',sans-serif", textTransform: "uppercase", fontWeight: active ? 700 : 400 }}>{t.label}</span>
           </button>
         );
       })}
@@ -66,12 +66,12 @@ function BottomNav({ tab, setTab }) {
 
 function TopBar() {
   return (
-    <div style={{ position: "fixed", top: 0, left: 0, right: 0, maxWidth: 480, margin: "0 auto", zIndex: 99, background: T.navBg, borderBottom: `1px solid ${T.border}`, padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 1px 8px rgba(0,0,0,0.04)" }}>
+    <div style={{ position: "fixed", top: 0, left: 0, right: 0, maxWidth: 480, margin: "0 auto", zIndex: 99, background: "#2d6a2d", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", boxShadow: "0 2px 12px rgba(45,106,45,0.3)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <span style={{ fontSize: 18 }}>🌿</span>
-        <span style={{ fontSize: 16, fontFamily: "'Lora',serif", fontWeight: 700, color: T.text }}>Shelf</span>
+        <span style={{ fontSize: 16, fontFamily: "'Lora',serif", fontWeight: 700, color: "#ffffff" }}>Shelf</span>
       </div>
-      <span style={{ fontSize: 13, color: T.muted, fontFamily: "'DM Sans',sans-serif" }}>Hips Social</span>
+      <span style={{ fontSize: 13, color: "#f5a623", fontFamily: "'DM Sans',sans-serif", fontWeight: 600, letterSpacing: 0.5 }}>Hips Social</span>
     </div>
   );
 }
@@ -115,16 +115,16 @@ function StockTab({ stock, thresholds, targets, onUpdate }) {
   const filtered = search.trim() ? CATEGORIES.map(c => ({ ...c, items: c.items.filter(i => i.toLowerCase().includes(search.toLowerCase())) })).filter(c => c.items.length > 0) : CATEGORIES;
   return (
     <div style={{ paddingBottom: 90 }}>
-      <div style={{ padding: "56px 16px 16px", background: T.card, borderBottom: `1px solid ${T.border}` }}>
-        <div style={{ fontSize: 11, color: T.muted, letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif" }}>Hips Social</div>
+      <div style={{ padding: "56px 16px 16px", background: "#2d6a2d", borderBottom: `1px solid #1e4d1e` }}>
+        <div style={{ fontSize: 11, color: "#f5a623", letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif", fontWeight: 600 }}>Hips Social</div>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: T.text }}>Stock</div>
-          {lowCount > 0 && <div style={{ background: `${T.warn}20`, border: `1px solid ${T.warn}`, borderRadius: 20, padding: "4px 12px", display: "flex", alignItems: "center", gap: 6 }}><span style={{ fontSize: 13 }}>⚠️</span><span style={{ fontSize: 12, color: T.warn, fontFamily: "'DM Sans',sans-serif", fontWeight: 700 }}>{lowCount} items low</span></div>}
+          <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: "#ffffff" }}>Stock</div>
+          {lowCount > 0 && <div style={{ background: `${T.warn}30`, border: `1px solid ${T.warn}`, borderRadius: 20, padding: "4px 12px", display: "flex", alignItems: "center", gap: 6 }}><span style={{ fontSize: 13 }}>⚠️</span><span style={{ fontSize: 12, color: T.warn, fontFamily: "'DM Sans',sans-serif", fontWeight: 700 }}>{lowCount} items low</span></div>}
         </div>
         <div style={{ marginTop: 12, position: "relative" }}>
           <span style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", fontSize: 16, color: T.dim }}>🔍</span>
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search items..."
-            style={{ width: "100%", boxSizing: "border-box", background: T.card2, border: `1px solid ${T.border}`, borderRadius: 12, color: T.text, fontFamily: "'DM Sans',sans-serif", fontSize: 15, padding: "11px 14px 11px 38px", outline: "none" }} />
+            style={{ width: "100%", boxSizing: "border-box", background: "rgba(255,255,255,0.15)", border: `1px solid rgba(255,255,255,0.25)`, borderRadius: 12, color: "#ffffff", fontFamily: "'DM Sans',sans-serif", fontSize: 15, padding: "11px 14px 11px 38px", outline: "none" }} />
         </div>
       </div>
       {filtered.map(cat => {
@@ -184,9 +184,9 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
   if (!started) {
     return (
       <div style={{ paddingBottom: 90 }}>
-        <div style={{ padding: "56px 16px 16px", background: T.card, borderBottom: `1px solid ${T.border}` }}>
-          <div style={{ fontSize: 11, color: T.muted, letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif" }}>Daily</div>
-          <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: T.text }}>Stock Count</div>
+        <div style={{ padding: "56px 16px 16px", background: "#2d6a2d", borderBottom: `1px solid #1e4d1e` }}>
+          <div style={{ fontSize: 11, color: "#f5a623", letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif", fontWeight: 600 }}>Daily</div>
+          <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: "#ffffff" }}>Stock Count</div>
         </div>
         <div style={{ padding: 20 }}>
           <div style={{ background: T.card, borderRadius: 20, padding: 24, border: `1px solid ${T.border}`, marginBottom: 16, textAlign: "center" }}>
@@ -277,11 +277,11 @@ function OrderTab({ stock, thresholds, targets }) {
 
   return (
     <div style={{ paddingBottom: 90 }}>
-      <div style={{ padding: "56px 16px 16px", background: T.card, borderBottom: `1px solid ${T.border}` }}>
-        <div style={{ fontSize: 11, color: T.muted, letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif" }}>Auto Generated</div>
+      <div style={{ padding: "56px 16px 16px", background: "#2d6a2d", borderBottom: `1px solid #1e4d1e` }}>
+        <div style={{ fontSize: 11, color: "#f5a623", letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif", fontWeight: 600 }}>Auto Generated</div>
         <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}>
-          <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: T.text }}>Order List</div>
-          {toOrder.length > 0 && <button onClick={copy} style={{ background: copied ? T.green : T.primary, border: "none", borderRadius: 12, color: "#fff", fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 700, padding: "8px 16px", cursor: "pointer" }}>{copied ? "✓ Copied!" : "Copy List"}</button>}
+          <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: "#ffffff" }}>Order List</div>
+          {toOrder.length > 0 && <button onClick={copy} style={{ background: copied ? T.green : "#f5a623", border: "none", borderRadius: 12, color: copied ? "#fff" : "#1a1a0a", fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: 700, padding: "8px 16px", cursor: "pointer" }}>{copied ? "✓ Copied!" : "Copy List"}</button>}
         </div>
       </div>
       {toOrder.length === 0 ? (
@@ -355,13 +355,13 @@ function SettingsTab({ user, onSignOut, thresholds, onThresholdChange, targets, 
 
   return (
     <div style={{ paddingBottom: 90 }}>
-      <div style={{ padding: "56px 16px 16px", background: T.card, borderBottom: `1px solid ${T.border}` }}>
-        <div style={{ fontSize: 11, color: T.muted, letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif" }}>Hips Social</div>
-        <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: T.text, marginBottom: 14 }}>Setup</div>
+      <div style={{ padding: "56px 16px 16px", background: "#2d6a2d", borderBottom: `1px solid #1e4d1e` }}>
+        <div style={{ fontSize: 11, color: "#f5a623", letterSpacing: 3, textTransform: "uppercase", marginBottom: 4, fontFamily: "'DM Sans',sans-serif", fontWeight: 600 }}>Hips Social</div>
+        <div style={{ fontSize: 32, fontFamily: "'Lora',serif", fontWeight: 700, color: "#ffffff", marginBottom: 14 }}>Setup</div>
         <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 2 }}>
           {sections.map(s => (
             <button key={s.id} onClick={() => setSection(s.id)}
-              style={{ flexShrink: 0, background: section === s.id ? T.primary : T.card2, border: `1px solid ${section === s.id ? T.primary : T.border}`, borderRadius: 20, color: section === s.id ? "#fff" : T.muted, fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: section === s.id ? 700 : 400, padding: "7px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
+              style={{ flexShrink: 0, background: section === s.id ? "#f5a623" : "rgba(255,255,255,0.15)", border: `1px solid ${section === s.id ? "#f5a623" : "rgba(255,255,255,0.25)"}`, borderRadius: 20, color: section === s.id ? "#1a1a0a" : "rgba(255,255,255,0.8)", fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: section === s.id ? 700 : 400, padding: "7px 14px", cursor: "pointer", display: "flex", alignItems: "center", gap: 5 }}>
               <span>{s.icon}</span>{s.label}
             </button>
           ))}
