@@ -159,7 +159,7 @@ function StockTab({ stock, thresholds, targets, onUpdate }) {
   );
 }
 
-function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }) {
+function CountTab({ stock, thresholds, targets, countOrder, unitTypes, onUpdate, onFinish }) {
   const [started, setStarted] = useState(false);
   const [idx, setIdx] = useState(0);
   const [draft, setDraft] = useState("");
@@ -169,7 +169,7 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
   const current = orderedItems[idx];
 
   const next = () => {
-    const n = parseInt(draft);
+    const n = isKg ? parseFloat(draft) : parseInt(draft);
     if (!isNaN(n) && n >= 0) onUpdate(current.id, n);
     if (idx < total - 1) { setIdx(idx + 1); setDraft(String(stock[orderedItems[idx + 1]?.id] ?? "")); }
     else { setStarted(false); setIdx(0); setDraft(""); onFinish(); }
@@ -207,14 +207,18 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
   }
 
   const target = targets[current.id] ?? 0;
+  const isKg = unitTypes[current.id] === "kg";
 
   const numpadPress = (key) => {
     if (key === "⌫") { setDraft(d => d.length > 1 ? d.slice(0, -1) : ""); }
     else if (key === "C") { setDraft(""); }
+    else if (key === ".") { setDraft(d => d.includes(".") ? d : (d === "" ? "0." : d + ".")); }
     else { setDraft(d => d === "" ? key : d + key); }
   };
 
-  const numpadKeys = ["1","2","3","4","5","6","7","8","9","C","0","⌫"];
+  const numpadKeys = isKg
+    ? ["1","2","3","4","5","6","7","8","9",".","0","⌫"]
+    : ["1","2","3","4","5","6","7","8","9","C","0","⌫"];
 
   return (
     <div style={{ height: "100vh", background: "#2d6a2d", display: "flex", flexDirection: "column", paddingTop: 50 }}>
@@ -234,6 +238,9 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
           <span style={{ fontSize: 18 }}>{current.catIcon}</span>
           <span style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", fontFamily: "'DM Sans',sans-serif", textTransform: "uppercase", letterSpacing: 1 }}>{current.catLabel}</span>
+          <div style={{ marginLeft: "auto", background: isKg ? "rgba(245,166,35,0.3)" : "rgba(255,255,255,0.15)", border: `1px solid ${isKg ? "rgba(245,166,35,0.6)" : "rgba(255,255,255,0.3)"}`, borderRadius: 20, padding: "3px 10px" }}>
+            <span style={{ fontSize: 11, color: isKg ? "#f5a623" : "rgba(255,255,255,0.8)", fontFamily: "'DM Sans',sans-serif", fontWeight: 700 }}>{isKg ? "⚖️ kg" : "# units"}</span>
+          </div>
         </div>
         <div style={{ fontSize: 34, fontFamily: "'Lora',serif", fontWeight: 700, color: "#ffffff", marginBottom: 10 }}>{current.name}</div>
         <div style={{ display: "flex", gap: 10 }}>
@@ -246,7 +253,7 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
       <div style={{ padding: "0 20px 12px", textAlign: "center" }}>
         <div style={{ background: "rgba(0,0,0,0.2)", borderRadius: 16, padding: "14px 20px", border: "2px solid rgba(245,166,35,0.5)" }}>
           <div style={{ fontSize: 56, fontWeight: 700, color: draft ? "#f5a623" : "rgba(255,255,255,0.3)", fontFamily: "'DM Sans',sans-serif", lineHeight: 1, minHeight: 60 }}>
-            {draft || "0"}
+            {draft || "0"}{draft && isKg ? <span style={{ fontSize: 24, color: "rgba(245,166,35,0.7)" }}> kg</span> : null}
           </div>
         </div>
       </div>
@@ -358,7 +365,7 @@ function OrderTab({ stock, thresholds, targets }) {
   );
 }
 
-function SettingsTab({ user, onSignOut, thresholds, onThresholdChange, targets, onTargetChange, countOrder, onCountOrderChange }) {
+function SettingsTab({ user, onSignOut, thresholds, onThresholdChange, targets, onTargetChange, countOrder, onCountOrderChange, unitTypes, onUnitTypeChange }) {
   const [section, setSection] = useState("targets");
   const [search, setSearch] = useState("");
   const [dragIdx, setDragIdx] = useState(null);
@@ -376,6 +383,7 @@ function SettingsTab({ user, onSignOut, thresholds, onThresholdChange, targets, 
 
   const sections = [
     { id: "targets",    label: "Targets",     icon: "🎯" },
+    { id: "units",      label: "Units",       icon: "⚖️" },
     { id: "order",      label: "Count Order", icon: "🔢" },
     { id: "thresholds", label: "Warnings",    icon: "⚠️" },
     { id: "account",    label: "Account",     icon: "👤" },
@@ -415,6 +423,38 @@ function SettingsTab({ user, onSignOut, thresholds, onThresholdChange, targets, 
                     <button onClick={() => onTargetChange(item.id, Math.max(0, current - 1))} style={{ width: 36, height: 36, borderRadius: 10, background: T.card2, border: `1px solid ${T.border}`, color: T.text, fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>−</button>
                     <div style={{ width: 44, textAlign: "center", fontSize: 20, fontWeight: 700, color: current > 0 ? T.primary : T.dim, fontFamily: "'DM Sans',sans-serif" }}>{current}</div>
                     <button onClick={() => onTargetChange(item.id, current + 1)} style={{ width: 36, height: 36, borderRadius: 10, background: T.primary, border: "none", color: "#fff", fontSize: 20, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>+</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {section === "units" && (
+        <div>
+          <div style={{ padding: "14px 16px 8px", background: T.bg }}>
+            <div style={{ fontSize: 13, color: T.muted, fontFamily: "'DM Sans',sans-serif", marginBottom: 10, lineHeight: 1.6 }}>Set whether each item is counted by units (e.g. tins, bags) or by kg. Kg items show a decimal numpad during count.</div>
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search items..." style={{ width: "100%", boxSizing: "border-box", background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, color: T.text, fontFamily: "'DM Sans',sans-serif", fontSize: 15, padding: "10px 14px", outline: "none" }} />
+          </div>
+          <div style={{ background: T.card }}>
+            {filtered.map(item => {
+              const isKg = unitTypes[item.id] === "kg";
+              return (
+                <div key={item.id} style={{ display: "flex", alignItems: "center", padding: "12px 16px", borderBottom: `1px solid ${T.border}`, gap: 12 }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 14, color: T.text, fontFamily: "'DM Sans',sans-serif", fontWeight: 500 }}>{item.name}</div>
+                    <div style={{ fontSize: 11, color: T.muted, fontFamily: "'DM Sans',sans-serif" }}>{item.catLabel}</div>
+                  </div>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={() => onUnitTypeChange(item.id, "units")}
+                      style={{ padding: "7px 16px", borderRadius: 10, background: !isKg ? T.primary : T.card2, border: `1px solid ${!isKg ? T.primary : T.border}`, color: !isKg ? "#fff" : T.muted, fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: !isKg ? 700 : 400, cursor: "pointer" }}>
+                      Units
+                    </button>
+                    <button onClick={() => onUnitTypeChange(item.id, "kg")}
+                      style={{ padding: "7px 16px", borderRadius: 10, background: isKg ? T.primary : T.card2, border: `1px solid ${isKg ? T.primary : T.border}`, color: isKg ? "#fff" : T.muted, fontFamily: "'DM Sans',sans-serif", fontSize: 13, fontWeight: isKg ? 700 : 400, cursor: "pointer" }}>
+                      kg
+                    </button>
                   </div>
                 </div>
               );
@@ -495,6 +535,7 @@ export default function ShelfApp({ user, onSignOut }) {
   const [thresholds, setThresholds] = useState({});
   const [targets, setTargets] = useState({});
   const [countOrder, setCountOrder] = useState([]);
+  const [unitTypes, setUnitTypes] = useState({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -506,25 +547,31 @@ export default function ShelfApp({ user, onSignOut }) {
           if (data.thresholds)  setThresholds(data.thresholds);
           if (data.targets)     setTargets(data.targets);
           if (data.count_order) setCountOrder(data.count_order);
+          if (data.unit_types)  setUnitTypes(data.unit_types);
+        }
+        setLoading(false);
+      }).catch(() => setLoading(false));
+  }, [user]);
         }
         setLoading(false);
       }).catch(() => setLoading(false));
   }, [user]);
 
   const stateRef = useRef({});
-  stateRef.current = { stock, thresholds, targets, countOrder };
+  stateRef.current = { stock, thresholds, targets, countOrder, unitTypes };
 
   const save = (patch) => {
     if (!user) return;
     const s = stateRef.current;
-    supabase.from('shelf_settings').upsert({ user_id: user.id, stock_data: s.stock, thresholds: s.thresholds, targets: s.targets, count_order: s.countOrder, ...patch }, { onConflict: 'user_id' })
+    supabase.from('shelf_settings').upsert({ user_id: user.id, stock_data: s.stock, thresholds: s.thresholds, targets: s.targets, count_order: s.countOrder, unit_types: s.unitTypes, ...patch }, { onConflict: 'user_id' })
       .then(({ error }) => { if (error) console.error('Save error:', error); });
   };
 
-  const handleUpdate    = (id, qty)   => { const n = { ...stock, [id]: qty };      setStock(n);      save({ stock_data: n }); };
-  const handleThreshold = (id, val)   => { const n = { ...thresholds, [id]: val }; setThresholds(n); save({ thresholds: n }); };
-  const handleTarget    = (id, val)   => { const n = { ...targets, [id]: val };    setTargets(n);    save({ targets: n }); };
-  const handleOrder     = (order)     => { setCountOrder(order);                                      save({ count_order: order }); };
+  const handleUpdate    = (id, qty)   => { const n = { ...stock, [id]: qty };        setStock(n);      save({ stock_data: n }); };
+  const handleThreshold = (id, val)   => { const n = { ...thresholds, [id]: val };   setThresholds(n); save({ thresholds: n }); };
+  const handleTarget    = (id, val)   => { const n = { ...targets, [id]: val };       setTargets(n);    save({ targets: n }); };
+  const handleOrder     = (order)     => { setCountOrder(order);                                         save({ count_order: order }); };
+  const handleUnitType  = (id, val)   => { const n = { ...unitTypes, [id]: val };     setUnitTypes(n);  save({ unit_types: n }); };
 
   if (loading) return <div style={{ background: T.bg, minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}><div style={{ color: T.primary, fontFamily: "'DM Sans',sans-serif", fontSize: 14, letterSpacing: 2 }}>Loading...</div></div>;
 
@@ -534,9 +581,9 @@ export default function ShelfApp({ user, onSignOut }) {
       <style>{`*{box-sizing:border-box}input[type=number]::-webkit-inner-spin-button{opacity:1}input::placeholder{color:#b5b0aa}::-webkit-scrollbar{width:0}button{outline:none;font-family:'DM Sans',sans-serif}`}</style>
       <TopBar />
       {tab === "stock"    && <StockTab stock={stock} thresholds={thresholds} targets={targets} onUpdate={handleUpdate} />}
-      {tab === "count"    && <CountTab stock={stock} thresholds={thresholds} targets={targets} countOrder={countOrder} onUpdate={handleUpdate} onFinish={() => setTab("order")} />}
+      {tab === "count"    && <CountTab stock={stock} thresholds={thresholds} targets={targets} countOrder={countOrder} unitTypes={unitTypes} onUpdate={handleUpdate} onFinish={() => setTab("order")} />}
       {tab === "order"    && <OrderTab stock={stock} thresholds={thresholds} targets={targets} />}
-      {tab === "settings" && <SettingsTab user={user} onSignOut={onSignOut} thresholds={thresholds} onThresholdChange={handleThreshold} targets={targets} onTargetChange={handleTarget} countOrder={countOrder} onCountOrderChange={handleOrder} />}
+      {tab === "settings" && <SettingsTab user={user} onSignOut={onSignOut} thresholds={thresholds} onThresholdChange={handleThreshold} targets={targets} onTargetChange={handleTarget} countOrder={countOrder} onCountOrderChange={handleOrder} unitTypes={unitTypes} onUnitTypeChange={handleUnitType} />}
       <BottomNav tab={tab} setTab={setTab} />
     </div>
   );
