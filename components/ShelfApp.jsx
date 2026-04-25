@@ -252,7 +252,7 @@ function CountTab({ stock, thresholds, targets, countOrder, onUpdate, onFinish }
       </div>
 
       {/* Numpad */}
-      <div style={{ background: "#f5a623", padding: "12px 16px 16px", borderRadius: "20px 20px 0 0" }}>
+      <div style={{ background: "#f5a623", padding: "12px 16px 90px", borderRadius: "20px 20px 0 0" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 10 }}>
           {numpadKeys.map(key => (
             <button key={key} onClick={() => numpadPress(key)}
